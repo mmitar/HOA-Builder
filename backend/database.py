@@ -2,7 +2,7 @@ from typing import Annotated
 from sqlmodel import Session, SQLModel, create_engine
 from fastapi import Depends
 
-sqlite_url = "sqlite:///database.db"
+sqlite_url = "sqlite:///backend/sqlite.db"
 engine = create_engine(sqlite_url, echo=False)
 
 def create_db_and_tables():

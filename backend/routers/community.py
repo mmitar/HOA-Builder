@@ -3,15 +3,15 @@ from sqlmodel import select
 from database import DbSession
 from models import Community, CommunityCreate, CommunityResponse, CommunityUpdate
 
-router = APIRouter(prefix="/communities", tags=["communities"])
+router = APIRouter(prefix="/communities", tags=["Communities"])
 
-@router.get("/", response_model=list[CommunityResponse])
+@router.get("/", response_model=list[CommunityResponse], status_code=200)
 def get_communities(session: DbSession, limit: int = 5):
     statement = select(Community).limit(limit)
     return session.exec(statement).all()
 
 
-@router.get("/{community_id}", response_model=CommunityResponse)
+@router.get("/{community_id}", response_model=CommunityResponse, status_code=200)
 def get_community(session: DbSession, community_id: int) -> CommunityResponse:
     community = session.get(Community, community_id)
     if community:
@@ -19,8 +19,8 @@ def get_community(session: DbSession, community_id: int) -> CommunityResponse:
     raise HTTPException(status_code=404, detail=f"Community '{community_id}' not found")
 
 
-@router.post("/", response_model=list[CommunityResponse])
-def create_community(session: DbSession, community: CommunityCreate) -> list[CommunityResponse]:
+@router.post("/", response_model=CommunityResponse, status_code=201)
+def create_community(session: DbSession, community: CommunityCreate) -> CommunityResponse:
     existing = session.exec(select(Community).where(Community.name == community.name)).first()
     if existing:
         raise HTTPException(status_code=409, detail=f"Community with name '{community.name}' already exists")
@@ -32,7 +32,7 @@ def create_community(session: DbSession, community: CommunityCreate) -> list[Com
     return new_community
 
 
-@router.put("/{community_id}", response_model=CommunityResponse)
+@router.put("/{community_id}", response_model=CommunityResponse, status_code=200)
 def update_community(
     session: DbSession,
     community_id: int,
@@ -49,12 +49,11 @@ def update_community(
     return session.refresh(community)
 
 
-@router.delete("/{community_id}", response_model=CommunityResponse)
-def delete_community(session: DbSession, community_id: int) -> CommunityResponse:
+@router.delete("/{community_id}", status_code=204)
+def delete_community(session: DbSession, community_id: int) -> None:
     community = session.get(Community, community_id)
     if not community:
         raise HTTPException(status_code=404, detail=f"Community '{community_id}' not found")
 
     session.delete(community)
     session.commit()
-    return community
