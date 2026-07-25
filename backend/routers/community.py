@@ -42,11 +42,15 @@ def update_community(
     if not community:
         raise HTTPException(status_code=404, detail=f"Community '{community_id}' not found")
 
-    community.name = updated_community.name
-    community.description = updated_community.description
+    for key, value in updated_community.model_dump().items():
+        setattr(community, key, value)
+
+    if not (0 < len(community.community_notes or "") <= 500):
+        raise HTTPException(status_code=400, detail="Community notes must be between 1 and 500 characters.")
     session.add(community)
     session.commit()
-    return session.refresh(community)
+    session.refresh(community)
+    return community
 
 
 @router.delete("/{community_id}", status_code=204)

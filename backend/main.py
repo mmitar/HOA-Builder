@@ -1,26 +1,29 @@
+import os
+
 from fastapi import FastAPI
-from database import create_db_and_tables
+from database import initialize_database, seed_data
 from routers.community import router as community_router
 from fastapi.middleware.cors import CORSMiddleware
 import uvicorn
 
-app = FastAPI(on_startup=[create_db_and_tables])
+env = os.environ.get("Environment", "DEV").upper()  # Default to DEV if not set
+seed = True if env == "DEV" else False  # Seed data only in DEV environment
 
-app.include_router(community_router)
+async def startup_event() -> None:
+    initialize_database(seed=seed)
+    
+app = FastAPI(on_startup=[startup_event])
 
-@app.get("/", status_code=200)
-def root():
-    return {"message": "Hello, World!"}
-
-origins_whitelist = ["http://localhost"]
-
+# Add CORS middleware first, before routes
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=origins_whitelist,
+    allow_origins=["http://localhost:5173"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+app.include_router(community_router)
 
 if __name__ == "__main__":
     # Allows us to just run `python main.py` to start the server instead of using `uvicorn main:app --reload`
