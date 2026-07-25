@@ -3,21 +3,31 @@ A fun full-stack development exercise. Practical application of database design,
 
 ## Setup
 
+Install the following packages to spin up the server. Note: I'm using python 3.14. These libraries were packaged under this version's global. Create a virtual environment if you need these containerized.
+
 > $ pip install fastapi
-Server that we use to test fastapi on.
 > $ pip install uvicorn
+> $ pip install sqlalchemy
+> $ pip install sqlmodel
 
-Note: I'm using python 3.14. These libraries were packaged under this version's global. Create a virtual environment if you need these containerized.
-
-1. Create a simple response package for visiting the root directory. Note calls are asynchronous by default. `Commit ID 175e3b1`
-
-Run your server:
+Run your server using below command in terminal. Visit the localhost spun-up (ex: http://127.0.0.1:8000).
 > $ python -m uvicorn main:app --reload
 
-Visit the localhost site your webapp is running on (ex: http://127.0.0.1:8000). The home Root route should print out the Hello World payload.
+While the server is running, review API documentation at http://127.0.0.1:8000/docs or http://127.0.0.1:8000/redoc.
 
-> curl -X GET -H "Content-Type: application/json" 'http://127.0.0.1:8000'
+## Approach
 
-2. Let's mock up a post service to start the CRUD implementation. Under main create a POST function that accepts a string that adds to an array. Either via postman or curl, POST to the communities route.
+My methodology throughout the project to maintain CI/CD is as follows:
+- DRY principles, encapsulation, and separation of concerns.
+- Explicit type casting API services so the interpreter can validate business rules.
+- Making minor changes and testing affected functionality after every code change.
+- Features are loosely coupled and relatively independent. A change to one service does not impact another. However underlying utility functions that share a resource always have test cases to ensure stability to all callers.
 
-> curl -X POST -H "Content-Type: application/json" 'http://127.0.0.1:8000/communities?community=Highlands'
+1. Started with FastAPI on the backend. I wanted to confirm I could standup the foundation of the project that hands-off data. From here I could build persistence and content layers indepedently.
+
+2. I would first prototype CRUD operations through FastAPI using a basic "Community" model; using a model establishes I have services working with a higher degree of complexity but also inherits rules defined in the model. CRUD operations would have basic validation and return managed HTTPExceptions if the request did not align with either the model rules or business rules.
+
+- Checking for posting duplicate Name Fields.
+- IDs were managed by the server, not the client.
+- Returned the appropriate HTTP status code based on which business rule went unsatisfied. Example: 404 for any CRUD operations attempting to request data that does not exist, etc..
+
