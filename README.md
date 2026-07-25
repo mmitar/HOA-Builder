@@ -28,6 +28,7 @@ My methodology throughout the project to maintain CI/CD is as follows:
 2. I would first prototype CRUD operations through FastAPI using a basic "Community" model; using a model establishes I have services working with a higher degree of complexity but also inherits rules defined in the model. CRUD operations would have basic validation and return managed HTTPExceptions if the request did not align with either the model rules or business rules.
 
 - Checking for posting duplicate Name Fields.
-- IDs were managed by the server, not the client.
+- IDs are managed by the server, not the client.
 - Returned the appropriate HTTP status code based on which business rule went unsatisfied. Example: 404 for any CRUD operations attempting to request data that does not exist, etc..
 
+3. With core CRUD API services functional, I created a persistence layer using SQLite, implemented by SQLModel. I chose SQLModel because its very minimal overhead compared to SQLAlchemy, doing much of the declarations and binding under the hood. With persistence enabled, I began structuring the project, creating designated spaces for routers and database references. I identified a practical way to minimize database dependency declaration so the project is scalable and maintainable as it scales up its router complexity.

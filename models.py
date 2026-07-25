@@ -1,8 +1,12 @@
-from pydantic import BaseModel
+from typing import Optional
+from sqlmodel import SQLModel, Field
 
-class CommunityBase(BaseModel):
+class CommunityBase(SQLModel):
     name: str
-    description: str = ""
+    description: Optional[str] = ""
+
+class Community(CommunityBase, table=True):
+    id: Optional[int] = Field(default=None, primary_key=True)
 
 class CommunityCreate(CommunityBase):
     pass
