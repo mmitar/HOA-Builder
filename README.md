@@ -72,13 +72,14 @@ This project uses SQLite for the database (stored as a `.db` artifact locally) a
      ```
    - On Windows:
      ```bash
-     .venv\Scripts\activate
+     . .venv/Scripts/activate
      ```
 
 3. **Install Python dependencies**:
    ```bash
    pip install fastapi uvicorn sqlalchemy sqlmodel
    ```
+   Run `pip config unset global.index-url` if your pip index needs to be reset.
 
 4. **Run the backend server**:
    ```bash
@@ -109,8 +110,7 @@ This project uses SQLite for the database (stored as a `.db` artifact locally) a
 
 ## Run Unit Tests
     ```bash
-    pip install httpx2
-    pip install pytest
+    pip install httpx2 pytest
     cd backend
     python -m pytest tests
     ```
