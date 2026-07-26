@@ -1,7 +1,7 @@
 from fastapi import APIRouter, HTTPException
 from sqlmodel import select
 from database import DbSession
-from models import Community, Note, NoteCreate, NoteResponse, NoteUpdate
+from models import Community, Note, NoteModify, NoteResponse, NoteModify
 
 router = APIRouter(prefix="/communities/{community_id}/notes", tags=["Notes"])
 
@@ -23,14 +23,14 @@ def _get_note(session: DbSession, community_id: int, note_id: int) -> Note:
 @router.get("/", response_model=list[NoteResponse], status_code=200)
 def list_notes(session: DbSession, community_id: int):
     _get_community(session, community_id)
-    statement = select(Note).where(Note.community_id == community_id)
+    statement = select(Note).where(Note.community_id == community_id).order_by(Note.creation_date.desc())
     return session.exec(statement).all()
 
 
 @router.post("/", response_model=NoteResponse, status_code=201)
-def create_note(session: DbSession, community_id: int, note: NoteCreate) -> NoteResponse:
+def create_note(session: DbSession, community_id: int, note: NoteModify) -> NoteResponse:
     _get_community(session, community_id)
-    new_note = Note(title=note.title, description=note.description, community_id=community_id)
+    new_note = Note(description=note.description, community_id=community_id)
     session.add(new_note)
     session.commit()
     session.refresh(new_note)
@@ -47,7 +47,7 @@ def update_note(
     session: DbSession,
     community_id: int,
     note_id: int,
-    updated_note: NoteUpdate,
+    updated_note: NoteModify,
 ) -> NoteResponse:
     _get_community(session, community_id)
     note = _get_note(session, community_id, note_id)
