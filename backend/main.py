@@ -1,4 +1,6 @@
 import os
+import subprocess
+import sys
 
 from fastapi import FastAPI
 from database import initialize_database, seed_data
@@ -28,5 +30,10 @@ app.include_router(community_router)
 app.include_router(notes_router)
 
 if __name__ == "__main__":
+    # Run the test suite before spinning up the server; abort startup if it fails.
+    result = subprocess.run([sys.executable, "-m", "pytest", "tests"])
+    if result.returncode != 0:
+        sys.exit(result.returncode)
+
     # Allows us to just run `python main.py` to start the server instead of using `uvicorn main:app --reload`
     uvicorn.run("main:app", host="0.0.0.0", port=8000, reload=True)

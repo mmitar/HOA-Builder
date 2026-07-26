@@ -1,15 +1,16 @@
-import csv
+import json
 from pathlib import Path
 from typing import Annotated
 from sqlmodel import Session, SQLModel, create_engine
 from fastapi import Depends
-from models import Community
+from models import Community, Note
 
 # Define paths and database URL
 BASE_DIR = Path(__file__).resolve().parent
 DB_PATH = BASE_DIR / "sqlite.db"
 DB_URL = f"sqlite:///{DB_PATH}"
-CSV_PATH = BASE_DIR / "data" / "communities.csv"
+COMMUNITIES_PATH = BASE_DIR / "data" / "communities.json"
+NOTES_PATH = BASE_DIR / "data" / "notes.json"
 engine = create_engine(DB_URL, echo=False)
 
 def get_session():
@@ -25,29 +26,18 @@ def initialize_database(seed: bool = False):
     if not db_exists and seed:
         seed_data()
 
-def seed_data(db_path=DB_PATH, csv_path=CSV_PATH):
-    if not csv_path.exists():
+def seed_data():
+    if not COMMUNITIES_PATH.exists():
         return False
 
     with Session(engine) as session:
-        with csv_path.open(newline="", encoding="utf-8") as handle:
-            rows = list(csv.DictReader(handle))
+        communities = json.loads(COMMUNITIES_PATH.read_text(encoding="utf-8"))
+        session.add_all(Community(**row) for row in communities)
 
-        for row in rows:
-            community = Community(
-                name=row.get("name", "").strip(),
-                address=row.get("address") or "",
-                city=row.get("city") or "",
-                state=row.get("state") or "",
-                zip_code=row.get("zip_code") or "",
-                president_name=row.get("president_name") or "",
-                president_email=row.get("president_email") or "",
-                annual_budget=float(row["annual_budget"]) if row.get("annual_budget") not in (None, "") else None,
-                monthly_dues=float(row["monthly_dues"]) if row.get("monthly_dues") not in (None, "") else None,
-                founded_year=int(row["founded_year"]) if row.get("founded_year") not in (None, "") else None,
-                description=row.get("description") or "",
-            )
-            session.add(community)
+        if NOTES_PATH.exists():
+            notes = json.loads(NOTES_PATH.read_text(encoding="utf-8"))
+            session.add_all(Note(**row) for row in notes)
 
         session.commit()
         return True
+
