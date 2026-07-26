@@ -5,6 +5,20 @@ from models import Community, Note, NoteModify, NoteResponse, NoteModify
 
 router = APIRouter(prefix="/communities/{community_id}/notes", tags=["Notes"])
 
+NOTE_MAX_LENGTH = 500
+
+
+def _validate_message(message: str) -> str:
+    stripped = message.strip()
+    if not stripped:
+        raise HTTPException(status_code=422, detail="Note message cannot be blank")
+    if len(stripped) > NOTE_MAX_LENGTH:
+        raise HTTPException(
+            status_code=422,
+            detail=f"Note message cannot exceed {NOTE_MAX_LENGTH} characters",
+        )
+    return stripped
+
 
 def _get_community(session: DbSession, community_id: int) -> Community:
     community = session.get(Community, community_id)
@@ -30,7 +44,8 @@ def list_notes(session: DbSession, community_id: int):
 @router.post("/", response_model=NoteResponse, status_code=201)
 def create_note(session: DbSession, community_id: int, note: NoteModify) -> NoteResponse:
     _get_community(session, community_id)
-    new_note = Note(description=note.description, community_id=community_id)
+    message = _validate_message(note.message)
+    new_note = Note(message=message, community_id=community_id)
     session.add(new_note)
     session.commit()
     session.refresh(new_note)
@@ -52,7 +67,10 @@ def update_note(
     _get_community(session, community_id)
     note = _get_note(session, community_id, note_id)
 
-    for key, value in updated_note.model_dump(exclude_unset=True).items():
+    updates = updated_note.model_dump(exclude_unset=True)
+    if "message" in updates:
+        updates["message"] = _validate_message(updates["message"])
+    for key, value in updates.items():
         setattr(note, key, value)
 
     session.add(note)

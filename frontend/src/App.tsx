@@ -178,6 +178,7 @@ function App() {
           onSave={handleSaveEdit}
           onClose={handleClose}
           onRequestDelete={() => setShowDeleteConfirm(true)}
+          onFlashMessage={flashMessage}
         />
 
         {showDeleteConfirm && (

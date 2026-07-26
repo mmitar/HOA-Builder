@@ -1,4 +1,5 @@
 import type { Community } from '../api';
+import type { FlashMessage } from './Toast';
 import { CommunityView } from './CommunityView';
 import { CommunityForm } from './CommunityForm';
 
@@ -15,6 +16,7 @@ interface CommunityDetailPanelProps {
   onSave: () => void;
   onClose: () => void;
   onRequestDelete: () => void;
+  onFlashMessage: FlashMessage;
 }
 
 export function CommunityDetailPanel({
@@ -30,6 +32,7 @@ export function CommunityDetailPanel({
   onSave,
   onClose,
   onRequestDelete,
+  onFlashMessage,
 }: CommunityDetailPanelProps) {
   /* 
   Nothing to render when the pane is closed — avoids doing work for
@@ -68,7 +71,7 @@ export function CommunityDetailPanel({
 
       <div className="detail-content">
         {!isEditing && community ? (
-          <CommunityView community={community} />
+          <CommunityView community={community} onFlashMessage={onFlashMessage} />
         ) : (
           <CommunityForm data={editData} onChange={onFieldChange} />
         )}

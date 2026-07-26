@@ -6,7 +6,7 @@ import sqlalchemy as sa
 # --- Note Model ---
 
 class NoteBase(SQLModel):
-    description: str
+    message: str
 
 class NoteModify(NoteBase):
     pass
@@ -19,7 +19,7 @@ class NoteResponse(NoteBase):
 class Note(NoteBase, table=True):
     note_id: Optional[int] = Field(default=None, primary_key=True)
     community_id: int = Field(foreign_key="community.community_id")
-    description: str
+    message: str
     creation_date: datetime = Field(
         default=datetime.now(timezone.utc),
         sa_column=sa.Column(sa.DateTime(timezone=True), nullable=False)

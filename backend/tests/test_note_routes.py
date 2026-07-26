@@ -49,7 +49,7 @@ def make_community(**overrides) -> Community:
 
 def make_note(**overrides) -> Note:
     defaults = dict(
-        description="This is a sample note.",
+        message="This is a sample note.",
         community_id=1,
     )
     defaults.update(overrides)
@@ -73,7 +73,7 @@ def test_create_note_for_existing_community_succeeds(client, mock_session):
 
     response = client.post(
         "/communities/1/notes",
-        json={"description": "Details"},
+        json={"message": "Details"},
     )
 
     assert response.status_code == 201
@@ -96,11 +96,11 @@ def test_update_note_for_existing_community_succeeds(client, mock_session):
 
     response = client.put(
         "/communities/1/notes/1",
-        json={"description": "Updated description"},
+        json={"message": "Updated description"},
     )
 
     assert response.status_code == 200
-    assert response.json()["description"] == "Updated description"
+    assert response.json()["message"] == "Updated description"
     mock_session.commit.assert_called_once()
 
 

@@ -1,15 +1,21 @@
 import type { Community } from '../api';
+import type { FlashMessage } from './Toast';
 import { DetailField } from './DetailField';
 import { NoteListPanel } from './NoteListPanel';
 
-export function CommunityView({ community }: { community: Community }) {
- 
+interface CommunityViewProps {
+  community: Community;
+  onFlashMessage: FlashMessage;
+}
+
+export function CommunityView({ community, onFlashMessage }: CommunityViewProps) {
+
   return (
     <div className="detail-view">
       <DetailField label="Community Name" value={community.name} />
       <DetailField label="Description" value={community.description} />
 
-      <NoteListPanel communityId={community.community_id} apiStatus="loading" />
+      <NoteListPanel communityId={community.community_id} onFlashMessage={onFlashMessage} />
       
       <div className="form-section">
         <h4>Location</h4>
