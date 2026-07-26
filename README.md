@@ -25,7 +25,25 @@ A full-stack development exercise. Practical application of model relationships,
 
 ## User Flow
 
-
+- User opens the app
+  - Frontend loads `/communities`
+  - Community list renders
+- User selects a community
+  - Frontend requests `GET /communities/{community_id}`
+  - Detail panel shows community fields
+  - User can:
+    - Edit community
+      - Form submits `PUT /communities/{community_id}`
+      - Backend validates `community_notes` length
+    - Delete community
+      - Confirm dialog sends `DELETE /communities/{community_id}`
+- User creates a new community
+  - Fill the form
+  - Submit sends `POST /communities`
+  - Backend rejects duplicate `name`
+- Backend startup
+  - Initializes SQLite schema
+  - Optionally seeds mock data in DEV mode
 
 ---
 
@@ -86,6 +104,15 @@ This project uses SQLite for the database (stored as a `.db` artifact locally) a
    ```
    The application will be available at `http://localhost:5173`.
 
+---
+
+## Run Unit Tests
+    ```bash
+    pip install httpx2
+    pip install pytest
+    cd backend
+    python -m pytest tests/test_community_routes.py
+    ```
 ---
 
 ## Future Scope
