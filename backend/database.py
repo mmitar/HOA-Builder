@@ -45,7 +45,7 @@ def seed_data(db_path=DB_PATH, csv_path=CSV_PATH):
                 annual_budget=float(row["annual_budget"]) if row.get("annual_budget") not in (None, "") else None,
                 monthly_dues=float(row["monthly_dues"]) if row.get("monthly_dues") not in (None, "") else None,
                 founded_year=int(row["founded_year"]) if row.get("founded_year") not in (None, "") else None,
-                community_notes=row.get("community_notes") or "",
+                description=row.get("description") or "",
             )
             session.add(community)
 

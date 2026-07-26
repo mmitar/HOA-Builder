@@ -33,8 +33,8 @@ export function CommunityListPanel({
         ) : (
           communities.map((community) => (
             <div
-              key={community.id}
-              className={`community-item ${selectedId === community.id ? 'selected' : ''}`}
+              key={community.community_id}
+              className={`community-item ${selectedId === community.community_id ? 'selected' : ''}`}
               onClick={() => onSelect(community)}
             >
               <div className="community-name">{community.name}</div>

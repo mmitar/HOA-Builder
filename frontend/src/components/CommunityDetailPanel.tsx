@@ -8,9 +8,9 @@ interface CommunityDetailPanelProps {
   isEditing: boolean;
   editData: Partial<Community>;
   isSaving: boolean;
+  hasNoChanges: boolean;
   onEditStart: () => void;
   onEditCancel: () => void;
-  onNameChange: (value: string) => void;
   onFieldChange: (field: keyof Community, value: any) => void;
   onSave: () => void;
   onClose: () => void;
@@ -23,9 +23,9 @@ export function CommunityDetailPanel({
   isEditing,
   editData,
   isSaving,
+  hasNoChanges,
   onEditStart,
   onEditCancel,
-  onNameChange,
   onFieldChange,
   onSave,
   onClose,
@@ -52,7 +52,7 @@ export function CommunityDetailPanel({
             </>
           ) : (
             <>
-              <button className="btn btn-success" onClick={onSave} disabled={isSaving}>
+              <button className="btn btn-success" onClick={onSave} disabled={isSaving || hasNoChanges}>
                 {isSaving ? 'Saving...' : 'Save'}
               </button>
               <button className="btn btn-secondary" onClick={onEditCancel} disabled={isSaving}>

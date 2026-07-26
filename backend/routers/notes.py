@@ -1,0 +1,69 @@
+from fastapi import APIRouter, HTTPException
+from sqlmodel import select
+from database import DbSession
+from models import Community, Note, NoteCreate, NoteResponse, NoteUpdate
+
+router = APIRouter(prefix="/communities/{community_id}/notes", tags=["Notes"])
+
+
+def _get_community(session: DbSession, community_id: int) -> Community:
+    community = session.get(Community, community_id)
+    if not community:
+        raise HTTPException(status_code=404, detail=f"Community '{community_id}' not found")
+    return community
+
+
+def _get_note(session: DbSession, community_id: int, note_id: int) -> Note:
+    note = session.get(Note, note_id)
+    if not note or note.community_id != community_id:
+        raise HTTPException(status_code=404, detail=f"Note '{note_id}' not found for Community '{community_id}'")
+    return note
+
+
+@router.get("/", response_model=list[NoteResponse], status_code=200)
+def list_notes(session: DbSession, community_id: int):
+    _get_community(session, community_id)
+    statement = select(Note).where(Note.community_id == community_id)
+    return session.exec(statement).all()
+
+
+@router.post("/", response_model=NoteResponse, status_code=201)
+def create_note(session: DbSession, community_id: int, note: NoteCreate) -> NoteResponse:
+    _get_community(session, community_id)
+    new_note = Note(title=note.title, description=note.description, community_id=community_id)
+    session.add(new_note)
+    session.commit()
+    session.refresh(new_note)
+    return new_note
+
+
+@router.get("/{note_id}", response_model=NoteResponse, status_code=200)
+def get_note(session: DbSession, community_id: int, note_id: int) -> NoteResponse:
+    return _get_note(session, community_id, note_id)
+
+
+@router.put("/{note_id}", response_model=NoteResponse, status_code=200)
+def update_note(
+    session: DbSession,
+    community_id: int,
+    note_id: int,
+    updated_note: NoteUpdate,
+) -> NoteResponse:
+    _get_community(session, community_id)
+    note = _get_note(session, community_id, note_id)
+
+    for key, value in updated_note.model_dump(exclude_unset=True).items():
+        setattr(note, key, value)
+
+    session.add(note)
+    session.commit()
+    session.refresh(note)
+    return note
+
+
+@router.delete("/{note_id}", status_code=204)
+def delete_note(session: DbSession, community_id: int, note_id: int) -> None:
+    _get_community(session, community_id)
+    note = _get_note(session, community_id, note_id)
+    session.delete(note)
+    session.commit()

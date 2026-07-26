@@ -8,7 +8,7 @@ interface CommunityFormProps {
 }
 
 export function CommunityForm({ data, onChange }: CommunityFormProps) {
-  const notes = (data.community_notes ?? '').toString();
+  const description = (data.description ?? '').toString();
 
   return (
     <form className="detail-edit">
@@ -19,11 +19,11 @@ export function CommunityForm({ data, onChange }: CommunityFormProps) {
         required
       />
       <FormField
-        label="Community Notes"
+        label="Description"
         type="textarea"
-        value={notes}
-        onChange={(v) => onChange('community_notes', v)}
-        hint={`${notes.length}/500`}
+        value={description}
+        onChange={(v) => onChange('description', v)}
+        hint={`${description.length}/500`}
       />
 
       <div className="form-section">

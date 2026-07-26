@@ -33,7 +33,6 @@ def client(mock_session):
 def make_community(**overrides) -> Community:
     """Build a Community instance with sensible defaults, as if loaded from the DB."""
     defaults = dict(
-        id=1,
         name="Maple Grove HOA",
         address="1 Maple St",
         city="Springfield",
@@ -44,19 +43,21 @@ def make_community(**overrides) -> Community:
         annual_budget=10000.0,
         monthly_dues=100.0,
         founded_year=2000,
-        community_notes="Welcome to the neighborhood.",
+        description="Welcome to the neighborhood.",
     )
     defaults.update(overrides)
-    return Community(**defaults)
+    instance = Community(**defaults)
+    instance.community_id = 1
+    return instance
 
 
 def test_create_community_with_unique_name_succeeds(client, mock_session):
     mock_session.exec.return_value.first.return_value = None
     # Simulate the DB assigning a primary key when session.refresh() is called.
-    mock_session.refresh.side_effect = lambda obj: setattr(obj, "id", 1)
+    mock_session.refresh.side_effect = lambda obj: setattr(obj, "community_id", 1)
 
     response = client.post(
-        "/communities/", json={"name": "New Community", "community_notes": "Notes"}
+        "/communities/", json={"name": "New Community", "description": "Notes"}
     )
     assert response.status_code == 201
     assert response.json()["name"] == "New Community"
@@ -70,7 +71,7 @@ def test_create_community_with_duplicate_name_returns_409(client, mock_session):
     )
 
     response = client.post(
-        "/communities/", json={"name": "Existing Community", "community_notes": "Notes"}
+        "/communities/", json={"name": "Existing Community", "description": "Notes"}
     )
     assert response.status_code == 409
     assert "already exists" in response.json()["detail"]
@@ -89,43 +90,31 @@ def test_update_community_not_found_returns_404(client, mock_session):
     mock_session.get.return_value = None
 
     response = client.put(
-        "/communities/999", json={"name": "X", "community_notes": "Y"}
+        "/communities/999", json={"name": "X", "description": "Y"}
     )
     assert response.status_code == 404
 
 
-def test_update_community_with_empty_notes_returns_400(client, mock_session):
+def test_update_community_with_empty_description_succeeds(client, mock_session):
     mock_session.get.return_value = make_community()
 
     response = client.put(
         "/communities/1",
-        json={"name": "Maple Grove HOA", "community_notes": ""},
-    )
-    assert response.status_code == 400
-    assert "between 1 and 500 characters" in response.json()["detail"]
-    mock_session.commit.assert_not_called()
-
-
-def test_update_community_with_overlong_notes_returns_400(client, mock_session):
-    mock_session.get.return_value = make_community()
-
-    response = client.put(
-        "/communities/1",
-        json={"name": "Maple Grove HOA", "community_notes": "x" * 501},
-    )
-    assert response.status_code == 400
-    mock_session.commit.assert_not_called()
-
-
-def test_update_community_with_valid_notes_returns_200(client, mock_session):
-    mock_session.get.return_value = make_community()
-
-    response = client.put(
-        "/communities/1",
-        json={"name": "Maple Grove HOA", "community_notes": "Updated notes"},
+        json={"name": "Maple Grove HOA", "description": ""},
     )
     assert response.status_code == 200
-    assert response.json()["community_notes"] == "Updated notes"
+    mock_session.commit.assert_called_once()
+
+
+def test_update_community_with_valid_description_returns_200(client, mock_session):
+    mock_session.get.return_value = make_community()
+
+    response = client.put(
+        "/communities/1",
+        json={"name": "Maple Grove HOA", "description": "Updated notes"},
+    )
+    assert response.status_code == 200
+    assert response.json()["description"] == "Updated notes"
     mock_session.commit.assert_called_once()
 
 

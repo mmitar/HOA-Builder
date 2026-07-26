@@ -197,18 +197,6 @@ body {
 .detail-panel.open {
   transform: translateX(0);
 }
-/* 
-@media (max-width: 1024px) {
-  .detail-panel {
-    position: absolute;
-    right: 0;
-    width: 100%;
-    top: 0;
-    bottom: 0;
-    z-index: 10;
-    box-shadow: -4px 0 12px rgba(0, 0, 0, 0.1);
-  }
-} */
 
 .detail-header {
   padding: 20px;
@@ -442,17 +430,6 @@ body {
 .project-info li {
   margin-bottom: 6px;
 }
-
-/* @media (max-width: 1024px) {
-  .project-info {
-    position: static;
-    width: 100%;
-    height: auto;
-    box-shadow: none;
-    border-left: none;
-    border-bottom: 1px solid var(--border);
-  }
-} */
 
 /* Buttons */
 .btn {

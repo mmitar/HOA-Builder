@@ -1,4 +1,4 @@
-name,address,city,state,zip_code,president_name,president_email,annual_budget,monthly_dues,founded_year,community_notes
+name,address,city,state,zip_code,president_name,president_email,annual_budget,monthly_dues,founded_year,description
 Cedar Grove Estates,101 Cedar Lane,Plano,TX,75024,Jennifer Ruiz,jruiz@example.com,425000,195,1987,"Tree-lined streets and a strong neighborhood watch."
 Maple Ridge Village,200 Maple Avenue,Frisco,TX,75034,Daniel Kim,dkim@example.com,610000,240,1995,"Community pool and annual holiday gala."
 Oak Harbor Association,330 Harbor Drive,League City,TX,77573,Marina Patel,mpatel@example.com,780000,280,2001,"Waterside amenities and marina access."

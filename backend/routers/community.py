@@ -5,17 +5,19 @@ from models import Community, CommunityCreate, CommunityResponse, CommunityUpdat
 
 router = APIRouter(prefix="/communities", tags=["Communities"])
 
+
 @router.get("/", response_model=list[CommunityResponse], status_code=200)
 def get_communities(session: DbSession, limit: int = 5):
     statement = select(Community).limit(limit)
-    return session.exec(statement).all()
+    communities = session.exec(statement).all()
+    return [CommunityResponse(**c.model_dump()) for c in communities]
 
 
 @router.get("/{community_id}", response_model=CommunityResponse, status_code=200)
 def get_community(session: DbSession, community_id: int) -> CommunityResponse:
     community = session.get(Community, community_id)
     if community:
-        return community
+        return CommunityResponse(**community.model_dump())
     raise HTTPException(status_code=404, detail=f"Community '{community_id}' not found")
 
 
@@ -29,7 +31,7 @@ def create_community(session: DbSession, community: CommunityCreate) -> Communit
     session.add(new_community)
     session.commit()
     session.refresh(new_community)
-    return new_community
+    return CommunityResponse(**new_community.model_dump())
 
 
 @router.put("/{community_id}", response_model=CommunityResponse, status_code=200)
@@ -45,12 +47,10 @@ def update_community(
     for key, value in updated_community.model_dump().items():
         setattr(community, key, value)
 
-    if not (0 < len(community.community_notes or "") <= 500):
-        raise HTTPException(status_code=400, detail="Community notes must be between 1 and 500 characters.")
     session.add(community)
     session.commit()
     session.refresh(community)
-    return community
+    return CommunityResponse(**community.model_dump())
 
 
 @router.delete("/{community_id}", status_code=204)

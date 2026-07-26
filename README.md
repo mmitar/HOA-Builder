@@ -6,8 +6,9 @@ A full-stack development exercise. Practical application of model relationships,
 ## Project Features
 
 - CRUD operations
-- Mobile Friendly
 - Decoupled MVC Framework
+- Microservices
+- Mobile Friendly
 - Functional Requirements enforced client-side and server-side
 - Parent-child relationship mapping
 - Re-usable infrastructure
@@ -111,7 +112,7 @@ This project uses SQLite for the database (stored as a `.db` artifact locally) a
     pip install httpx2
     pip install pytest
     cd backend
-    python -m pytest tests/test_community_routes.py
+    python -m pytest tests
     ```
 ---
 
@@ -123,3 +124,6 @@ This project uses SQLite for the database (stored as a `.db` artifact locally) a
 - JWT Authentication
 - Configurable communitity ammenities, ammentity types, and community types.
 - Selenium Regression Testing
+- Meta-data and audit log history
+- Access Control list based on operations
+- Revise Notes API foreign key constriant checks

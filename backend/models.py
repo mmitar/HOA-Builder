@@ -1,5 +1,34 @@
+from datetime import datetime, timezone
 from typing import Optional
-from sqlmodel import SQLModel, Field
+from sqlmodel import Field, SQLModel, Column, DateTime
+import sqlalchemy as sa
+
+# --- Note Model ---
+
+class NoteBase(SQLModel):
+    title: str
+    description: Optional[str] = ""
+
+class NoteCreate(NoteBase):
+    pass
+
+class NoteUpdate(NoteBase):
+    pass
+
+class NoteResponse(NoteBase):
+    note_id: int
+    creation_date: datetime
+
+class Note(NoteBase, table=True):
+    note_id: Optional[int] = Field(default=None, primary_key=True)
+    community_id: int = Field(foreign_key="community.community_id")
+    title: str
+    description: Optional[str] = ""
+    creation_date: datetime = Field(
+        default=datetime.now(timezone.utc),
+        sa_column=sa.Column(sa.DateTime(timezone=True), nullable=False)
+    )
+# --- Community Model ---
 
 class CommunityBase(SQLModel):
     name: str
@@ -12,10 +41,10 @@ class CommunityBase(SQLModel):
     annual_budget: Optional[float] = None
     monthly_dues: Optional[float] = None
     founded_year: Optional[int] = None
-    community_notes: Optional[str] = ""
+    description: Optional[str] = ""
 
 class Community(CommunityBase, table=True):
-    id: Optional[int] = Field(default=None, primary_key=True)
+    community_id: Optional[int] = Field(default=None, primary_key=True)
 
 class CommunityCreate(CommunityBase):
     pass
@@ -24,4 +53,5 @@ class CommunityUpdate(CommunityBase):
     pass
 
 class CommunityResponse(CommunityBase):
-    id: int
+    community_id: int
+

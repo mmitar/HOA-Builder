@@ -3,6 +3,7 @@ import os
 from fastapi import FastAPI
 from database import initialize_database, seed_data
 from routers.community import router as community_router
+from routers.notes import router as notes_router
 from fastapi.middleware.cors import CORSMiddleware
 import uvicorn
 
@@ -24,6 +25,7 @@ app.add_middleware(
 )
 
 app.include_router(community_router)
+app.include_router(notes_router)
 
 if __name__ == "__main__":
     # Allows us to just run `python main.py` to start the server instead of using `uvicorn main:app --reload`

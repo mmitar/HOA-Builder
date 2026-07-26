@@ -10,9 +10,9 @@ import './App.css';
 
 type ApiStatus = 'idle' | 'loading' | 'success' | 'error';
 
-const EMPTY_COMMUNITY: Omit<Community, 'id'> = {
+const EMPTY_COMMUNITY: Omit<Community, 'community_id'> = {
   name: '',
-  community_notes: '',
+  description: '',
   address: '',
   city: '',
   state: '',
@@ -93,27 +93,18 @@ function App() {
   };
 
   const handleSaveEdit = async () => {
-    const notes = (editData.community_notes ?? '').toString();
     const name = (editData.name ?? '').toString();
 
     if (!name.trim()) {
       flashMessage('error', 'Community name cannot be blank');
       return;
     }
-    if (!notes.trim()) {
-      flashMessage('error', 'Notes cannot be blank');
-      return;
-    }
-    if (notes.length > 500) {
-      flashMessage('error', 'Notes cannot exceed 500 characters');
-      return;
-    }
 
     try {
       flashMessage('loading', '');
       if (selectedCommunity) {
-        const response = await communitiesAPI.update(selectedCommunity.id, editData as Community);
-        setCommunities(communities.map((c) => (c.id === selectedCommunity.id ? response.data : c)));
+        const response = await communitiesAPI.update(selectedCommunity.community_id, editData as Community);
+        setCommunities(communities.map((c) => (c.community_id === selectedCommunity.community_id ? response.data : c)));
         setSelectedCommunity(response.data);
         flashMessage('success', 'Community updated successfully', true);
       } else {
@@ -134,13 +125,24 @@ function App() {
 
     try {
       flashMessage('loading', '');
-      await communitiesAPI.delete(selectedCommunity.id);
-      setCommunities(communities.filter((c) => c.id !== selectedCommunity.id));
+      await communitiesAPI.delete(selectedCommunity.community_id);
+      setCommunities(communities.filter((c) => c.community_id !== selectedCommunity.community_id));
       handleClose();
       flashMessage('success', 'Community deleted successfully', true);
     } catch (error: any) {
       flashMessage('error', error.response?.data?.detail || 'Failed to delete community');
     }
+  };
+
+  const hasChanges = () => {
+    if (!selectedCommunity) {
+      // Creating new community - check if anything is filled in
+      return Object.values(editData).some(val => val !== null && val !== '' && val !== undefined);
+    }
+    // Editing existing - compare editData with selectedCommunity
+    return Object.keys(editData).some(
+      key => editData[key as keyof Community] !== selectedCommunity[key as keyof Community]
+    );
   };
 
   const isDetailOpen = selectedCommunity !== null || isEditing;
@@ -157,7 +159,7 @@ function App() {
 
         <CommunityListPanel
           communities={communities}
-          selectedId={selectedCommunity?.id}
+          selectedId={selectedCommunity?.community_id}
           isLoading={apiStatus === 'loading'}
           onSelect={handleSelectCommunity}
           onCreateNew={handleCreateNew}
@@ -169,9 +171,9 @@ function App() {
           isEditing={isEditing}
           editData={editData}
           isSaving={apiStatus === 'loading'}
+          hasNoChanges={!hasChanges()}
           onEditStart={handleEditStart}
           onEditCancel={handleEditCancel}
-          onNameChange={(value) => handleEditChange('name', value)}
           onFieldChange={handleEditChange}
           onSave={handleSaveEdit}
           onClose={handleClose}
