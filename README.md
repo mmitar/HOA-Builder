@@ -127,3 +127,5 @@ This project uses SQLite for the database (stored as a `.db` artifact locally) a
 - Meta-data and audit log history
 - Access Control list based on operations
 - Revise Notes API foreign key constriant checks
+- Logger Framework
+- Scoped CSS

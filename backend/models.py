@@ -1,29 +1,25 @@
 from datetime import datetime, timezone
 from typing import Optional
-from sqlmodel import Field, SQLModel, Column, DateTime
+from sqlmodel import Field, SQLModel
 import sqlalchemy as sa
 
 # --- Note Model ---
 
 class NoteBase(SQLModel):
-    title: str
-    description: Optional[str] = ""
+    description: str
 
-class NoteCreate(NoteBase):
-    pass
-
-class NoteUpdate(NoteBase):
+class NoteModify(NoteBase):
     pass
 
 class NoteResponse(NoteBase):
     note_id: int
+    community_id: int
     creation_date: datetime
 
 class Note(NoteBase, table=True):
     note_id: Optional[int] = Field(default=None, primary_key=True)
     community_id: int = Field(foreign_key="community.community_id")
-    title: str
-    description: Optional[str] = ""
+    description: str
     creation_date: datetime = Field(
         default=datetime.now(timezone.utc),
         sa_column=sa.Column(sa.DateTime(timezone=True), nullable=False)
@@ -46,10 +42,7 @@ class CommunityBase(SQLModel):
 class Community(CommunityBase, table=True):
     community_id: Optional[int] = Field(default=None, primary_key=True)
 
-class CommunityCreate(CommunityBase):
-    pass
-
-class CommunityUpdate(CommunityBase):
+class CommunityModify(CommunityBase):
     pass
 
 class CommunityResponse(CommunityBase):

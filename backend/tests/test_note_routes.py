@@ -2,7 +2,6 @@
 Tests for the note routes.
 """
 
-from datetime import datetime, timezone
 from unittest.mock import MagicMock, patch
 
 import pytest
@@ -50,7 +49,6 @@ def make_community(**overrides) -> Community:
 
 def make_note(**overrides) -> Note:
     defaults = dict(
-        title="First note",
         description="This is a sample note.",
         community_id=1,
     )
@@ -75,7 +73,7 @@ def test_create_note_for_existing_community_succeeds(client, mock_session):
 
     response = client.post(
         "/communities/1/notes",
-        json={"title": "New note", "description": "Details"},
+        json={"description": "Details"},
     )
 
     assert response.status_code == 201
@@ -98,11 +96,11 @@ def test_update_note_for_existing_community_succeeds(client, mock_session):
 
     response = client.put(
         "/communities/1/notes/1",
-        json={"title": "Updated note", "description": "Updated description"},
+        json={"description": "Updated description"},
     )
 
     assert response.status_code == 200
-    assert response.json()["title"] == "Updated note"
+    assert response.json()["description"] == "Updated description"
     mock_session.commit.assert_called_once()
 
 
