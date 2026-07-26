@@ -2,7 +2,6 @@ import axios from 'axios';
 
 export interface Note {
   note_id: number;
-  title: string;
   description: string;
   creation_date: string;
 }

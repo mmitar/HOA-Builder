@@ -17,8 +17,7 @@ export function ProjectInfoPanel({ isExpanded, onToggleExpand }: { isExpanded?: 
         <h3>Purpose</h3>
         <p>
           This exercise evaluates your ability to build a small feature across a frontend, backend
-          API, and database. We are interested in how you think through the full workflow—not just
-          whether the screen looks finished.
+          API, and database.
         </p>
 
         <h3>Instructions</h3>
