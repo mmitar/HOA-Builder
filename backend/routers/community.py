@@ -1,7 +1,7 @@
 from fastapi import APIRouter, HTTPException
-from sqlmodel import select
+from sqlmodel import select, delete
 from database import DbSession
-from models import Community, CommunityModify, CommunityResponse, CommunityModify
+from models import Community, CommunityModify, CommunityResponse, CommunityModify, Note
 
 router = APIRouter(prefix="/communities", tags=["Communities"])
 
@@ -58,5 +58,8 @@ def delete_community(session: DbSession, community_id: int) -> None:
     if not community:
         raise HTTPException(status_code=404, detail=f"Community '{community_id}' not found")
 
+    session.exec(
+        delete(Note).where(Note.community_id == community_id)
+    )
     session.delete(community)
     session.commit()

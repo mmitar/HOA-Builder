@@ -3,9 +3,9 @@ import subprocess
 import sys
 
 from fastapi import FastAPI
-from database import initialize_database, seed_data
+from database import initialize_database
 from routers.community import router as community_router
-from routers.notes import router as notes_router
+from routers.note import router as notes_router
 from fastapi.middleware.cors import CORSMiddleware
 import uvicorn
 
