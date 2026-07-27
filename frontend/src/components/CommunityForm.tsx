@@ -23,7 +23,6 @@ export function CommunityForm({ data, onChange }: CommunityFormProps) {
         type="textarea"
         value={description}
         onChange={(v) => onChange('description', v)}
-        hint={`${description.length}/500`}
       />
 
       <div className="form-section">
