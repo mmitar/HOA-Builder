@@ -7,6 +7,7 @@ A full-stack development exercise. Practical application of model relationships,
 - Database: SQLite or another simple persistent database
 
 **Functional requirements**
+
 The application must:
 - Display a list of communities.
 - Allow the user to select a community.
