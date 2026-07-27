@@ -8,7 +8,7 @@ import sqlalchemy as sa
 class NoteBase(SQLModel):
     message: str
 
-class NoteModify(NoteBase):
+class NoteInput(NoteBase):
     pass
 
 class NoteResponse(NoteBase):
@@ -42,7 +42,7 @@ class CommunityBase(SQLModel):
 class Community(CommunityBase, table=True):
     community_id: Optional[int] = Field(default=None, primary_key=True)
 
-class CommunityModify(CommunityBase):
+class CommunityInput(CommunityBase):
     pass
 
 class CommunityResponse(CommunityBase):

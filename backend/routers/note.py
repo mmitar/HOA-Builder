@@ -1,7 +1,7 @@
 from fastapi import APIRouter, HTTPException
 from sqlmodel import select
 from database import DbSession
-from models import Community, Note, NoteModify, NoteResponse, NoteModify
+from models import Community, Note, NoteInput, NoteResponse, NoteInput
 
 router = APIRouter(prefix="/communities/{community_id}/notes", tags=["Notes"])
 
@@ -42,7 +42,7 @@ def list_notes(session: DbSession, community_id: int):
 
 
 @router.post("/", response_model=NoteResponse, status_code=201)
-def create_note(session: DbSession, community_id: int, note: NoteModify) -> NoteResponse:
+def create_note(session: DbSession, community_id: int, note: NoteInput) -> NoteResponse:
     _get_community(session, community_id)
     message = _validate_message(note.message)
     new_note = Note(message=message, community_id=community_id)
@@ -62,7 +62,7 @@ def update_note(
     session: DbSession,
     community_id: int,
     note_id: int,
-    updated_note: NoteModify,
+    updated_note: NoteInput,
 ) -> NoteResponse:
     _get_community(session, community_id)
     note = _get_note(session, community_id, note_id)

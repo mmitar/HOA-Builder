@@ -1,7 +1,7 @@
 from fastapi import APIRouter, HTTPException
 from sqlmodel import select, delete
 from database import DbSession
-from models import Community, CommunityModify, CommunityResponse, CommunityModify, Note
+from models import Community, CommunityInput, CommunityResponse, CommunityInput, Note
 
 router = APIRouter(prefix="/communities", tags=["Communities"])
 
@@ -22,7 +22,7 @@ def get_community(session: DbSession, community_id: int) -> CommunityResponse:
 
 
 @router.post("/", response_model=CommunityResponse, status_code=201)
-def create_community(session: DbSession, community: CommunityModify) -> CommunityResponse:
+def create_community(session: DbSession, community: CommunityInput) -> CommunityResponse:
     existing = session.exec(select(Community).where(Community.name == community.name)).first()
     if existing:
         raise HTTPException(status_code=409, detail=f"Community with name '{community.name}' already exists")
@@ -38,7 +38,7 @@ def create_community(session: DbSession, community: CommunityModify) -> Communit
 def update_community(
     session: DbSession,
     community_id: int,
-    updated_community: CommunityModify,
+    updated_community: CommunityInput,
 ) -> CommunityResponse:
     community = session.get(Community, community_id)
     if not community:
