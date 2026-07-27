@@ -556,7 +556,6 @@ body {
 }
 
 .project-info p {
-  color: var(--text-light);
   margin-bottom: 12px;
   line-height: 1.5;
 }

@@ -38,7 +38,7 @@ export const communitiesAPI = {
 };
 
 export const notesAPI = {
-  list:   (communityId: number) => api.get<Note[]>(`/communities/${communityId}/notes`),
+  list:   (communityId: number) => api.get<Note[]>(`/communities/${communityId}/notes/`),
   get:    (communityId: number, noteId: number) => api.get<Note>(`/communities/${communityId}/notes/${noteId}`),
   create: (communityId: number, data: NoteInput) => api.post<Note>(`/communities/${communityId}/notes`, data),
   update: (communityId: number, noteId: number, data: NoteInput) => api.put<Note>(`/communities/${communityId}/notes/${noteId}`, data),

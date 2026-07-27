@@ -59,10 +59,21 @@ function App() {
     }
   };
 
-  const handleSelectCommunity = (community: Community) => {
-    setSelectedCommunity(community);
-    setIsEditing(false);
-    setEditData({});
+  const handleSelectCommunity = async (community: Community) => {
+
+    try {
+      flashMessage('loading', '');
+      if (community) {
+        const response = await communitiesAPI.get(community.community_id);
+        setCommunities(communities.map((c) => (c.community_id === community.community_id ? response.data : c)));
+        setSelectedCommunity(response.data);
+        flashMessage('success', 'Community loaded successfully', true);
+        setIsEditing(false);
+        setEditData({});
+      }
+    } catch (error: any) {
+      flashMessage('error', error.response?.data?.detail || 'Failed to update community');
+    }
   };
 
   const handleCreateNew = () => {
